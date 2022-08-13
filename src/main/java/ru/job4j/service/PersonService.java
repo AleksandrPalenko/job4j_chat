@@ -22,6 +22,10 @@ public class PersonService {
         return new ArrayList<>(rep.findAll());
     }
 
+    public Optional<Person> findPersonByLogin(String personLogin) {
+        return rep.findPersonByLogin(personLogin);
+    }
+
     public Optional<Person> findById(int id) {
         return rep.findById(id);
     }

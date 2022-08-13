@@ -16,4 +16,7 @@ public interface PersonRepository extends CrudRepository<Person, Integer> {
 
     @Query("select distinct p from Person p join fetch p.role where p.id = :pId")
     Optional<Person> findById(@Param("pId") int id);
+
+    @Query("select distinct p from Person p join fetch p.role where p.login = :pLogin")
+    Optional<Person> findPersonByLogin(@Param("pLogin") String personLogin);
 }

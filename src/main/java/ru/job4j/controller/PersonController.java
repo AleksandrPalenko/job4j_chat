@@ -2,27 +2,42 @@ package ru.job4j.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.model.Person;
+import ru.job4j.model.Role;
 import ru.job4j.service.PersonService;
-import ru.job4j.util.PersonErrorResponse;
-import ru.job4j.util.PersonNotCreatedException;
+import ru.job4j.service.RoleService;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/person")
 public class PersonController {
     private final PersonService personService;
+    private final BCryptPasswordEncoder encoder;
+    private final RoleService roleService;
 
-    public PersonController(PersonService personService) {
+    public PersonController(PersonService personService, BCryptPasswordEncoder encoder, RoleService roleService) {
         this.personService = personService;
+        this.encoder = encoder;
+        this.roleService = roleService;
     }
 
-    @GetMapping("/")
+    @PostMapping("/sign-up")
+    public ResponseEntity<Person> signUp(@RequestBody Person person, @PathVariable("rId") int rId) {
+        person.setPassword(encoder.encode(person.getPassword()));
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleService.findById(rId).get());
+        person.setRole(roles);
+        Person save = personService.save(person);
+        return new ResponseEntity<>(
+                save,
+                HttpStatus.CREATED
+        );
+    }
+
+    @GetMapping("/all")
     public List<Person> findAll() {
         return personService.findAll();
     }
@@ -32,6 +47,7 @@ public class PersonController {
         return personService.findById(id);
     }
 
+    /**
     @PostMapping("/person")
     public ResponseEntity<Person> create(@RequestBody Person person,
                                          BindingResult bindingResult) {
@@ -51,6 +67,7 @@ public class PersonController {
                 HttpStatus.CREATED
         );
     }
+     */
 
     @PutMapping("/person")
     public ResponseEntity<Void> update(@RequestBody Person person) {
