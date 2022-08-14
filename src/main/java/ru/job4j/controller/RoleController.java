@@ -24,7 +24,7 @@ public class RoleController {
         return roleService.findAll();
     }
 
-    @PostMapping("/role")
+    @PostMapping("/addRole")
     public ResponseEntity<Role> save(Role role) {
         return new ResponseEntity<>(
                 roleService.save(role),

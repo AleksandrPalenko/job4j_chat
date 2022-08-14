@@ -19,9 +19,8 @@ public class Role {
     @Column(name = "name")
     private String name;
 
-    public static Role of(int id, String name) {
+    public static Role of(String name) {
         Role role = new Role();
-        role.id = id;
         role.name = name;
         return role;
     }

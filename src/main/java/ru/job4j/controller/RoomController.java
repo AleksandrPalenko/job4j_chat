@@ -33,7 +33,7 @@ public class RoomController {
         );
     }
 
-    @PostMapping("/room")
+    @PostMapping("/addRoom")
     public ResponseEntity<Room> save(Room room) {
         return new ResponseEntity<>(
                 roomService.save(room),

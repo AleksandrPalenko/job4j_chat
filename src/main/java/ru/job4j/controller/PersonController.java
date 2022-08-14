@@ -6,6 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.model.Person;
 import ru.job4j.model.Role;
+import ru.job4j.repository.RoleRepository;
 import ru.job4j.service.PersonService;
 import ru.job4j.service.RoleService;
 
@@ -25,11 +26,11 @@ public class PersonController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Person> signUp(@RequestBody Person person, @PathVariable("rId") int rId) {
+    public ResponseEntity<Person> signUp(@RequestBody Person person) {
         person.setPassword(encoder.encode(person.getPassword()));
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleService.findById(rId).get());
-        person.setRole(roles);
+        Set<Role> userRoles = new HashSet<>();
+        userRoles.add(Role.of("ROLE_USER"));
+        person.setRole(userRoles);
         Person save = personService.save(person);
         return new ResponseEntity<>(
                 save,

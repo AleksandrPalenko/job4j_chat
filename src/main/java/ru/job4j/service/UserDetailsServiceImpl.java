@@ -14,15 +14,15 @@ import static java.util.Collections.emptyList;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final PersonRepository userRepository;
+    private final PersonService personService;
 
-    public UserDetailsServiceImpl(PersonRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserDetailsServiceImpl(PersonService personService) {
+        this.personService = personService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Optional<Person> user = userRepository.findPersonByLogin(login);
+        Optional<Person> user = personService.findPersonByLogin(login);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException(login);
         }

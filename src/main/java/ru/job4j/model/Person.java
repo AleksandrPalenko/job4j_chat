@@ -23,7 +23,7 @@ public class Person {
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "person_role",
             joinColumns = @JoinColumn(name = "person_id"),
