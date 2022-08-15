@@ -30,7 +30,7 @@ public class RoomService {
         return rep.save(room);
     }
 
-    public void delete(int id) {
-        rep.delete(rep.findById(id).get());
+    public void delete(Room room) {
+        rep.delete(room);
     }
 }

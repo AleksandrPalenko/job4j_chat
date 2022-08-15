@@ -7,7 +7,6 @@ import ru.job4j.repository.RoleRepository;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class RoleService {

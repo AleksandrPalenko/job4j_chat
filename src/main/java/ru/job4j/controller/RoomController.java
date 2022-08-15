@@ -3,11 +3,11 @@ package ru.job4j.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Room;
 import ru.job4j.service.RoomService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/room")
@@ -26,15 +26,20 @@ public class RoomController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Room> findById(@PathVariable int id) {
-        Optional<Room> roomById = roomService.findById(id);
-        return new ResponseEntity<>(
-                roomById.orElse(new Room()),
-                roomById.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
-        );
+        Room room = roomService.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, "Room is not found. Please, check the input data."
+                        )
+                );
+        return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
     @PostMapping("/addRoom")
     public ResponseEntity<Room> save(Room room) {
+        if (room.getName() == null) {
+            throw new NullPointerException("Name of Room is not be empty");
+        }
         return new ResponseEntity<>(
                 roomService.save(room),
                 HttpStatus.CREATED
@@ -43,7 +48,11 @@ public class RoomController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        roomService.delete(id);
+        Room room = roomService.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "Room is not found"
+        ));
+        roomService.delete(room);
         return ResponseEntity.ok().build();
     }
 

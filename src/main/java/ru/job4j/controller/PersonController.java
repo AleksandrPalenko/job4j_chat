@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Person;
 import ru.job4j.model.Role;
-import ru.job4j.repository.RoleRepository;
 import ru.job4j.service.PersonService;
 import ru.job4j.service.RoleService;
 
@@ -27,13 +27,13 @@ public class PersonController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<Person> signUp(@RequestBody Person person) {
+        validationForRegistration(person);
         person.setPassword(encoder.encode(person.getPassword()));
         Set<Role> userRoles = new HashSet<>();
         userRoles.add(Role.of("ROLE_USER"));
         person.setRole(userRoles);
-        Person save = personService.save(person);
         return new ResponseEntity<>(
-                save,
+                personService.save(person),
                 HttpStatus.CREATED
         );
     }
@@ -44,31 +44,15 @@ public class PersonController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Person> getPerson(@PathVariable int id) {
-        return personService.findById(id);
+    public ResponseEntity<Person> getPerson(@PathVariable int id) {
+        Person person = personService.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, "Account is not found. Please, check the input data."
+                        )
+                );
+        return new ResponseEntity<>(person, HttpStatus.OK);
     }
-
-    /**
-    @PostMapping("/person")
-    public ResponseEntity<Person> create(@RequestBody Person person,
-                                         BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder errorMes = new StringBuilder();
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for (FieldError error : errors) {
-                errorMes.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-            }
-            throw new PersonNotCreatedException(errorMes.toString());
-        }
-        Person save = personService.save(person);
-        return new ResponseEntity<>(
-                save,
-                HttpStatus.CREATED
-        );
-    }
-     */
 
     @PutMapping("/person")
     public ResponseEntity<Void> update(@RequestBody Person person) {
@@ -78,25 +62,29 @@ public class PersonController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
-        Optional<Person> personById = personService.findById(id);
-        if (personById.isEmpty()) {
-            return new ResponseEntity<>(
-                    null,
-                    HttpStatus.NOT_FOUND
-            );
-        }
-        personService.delete(id);
+        Person personById = personService.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Account is not found. Please, check the input data."
+                        ));
+        personService.delete(personById);
         return ResponseEntity.ok().build();
     }
-/**
-    @ExceptionHandler
-    private ResponseEntity<PersonErrorResponse> handlerException(PersonNotCreatedException p) {
-        PersonErrorResponse response = new PersonErrorResponse(
-                p.getMessage(),
-                System.currentTimeMillis()
-        );
 
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    private void validationForRegistration(Person person) {
+        String login = person.getLogin();
+        String password = person.getPassword();
+        if (login == null || password == null) {
+            throw new NullPointerException("Username and password mustn't be empty");
+        }
+        if (personService.findPersonByLogin(login).isPresent()) {
+            throw new IllegalArgumentException("Account already exists");
+        }
+        if (!login.matches("[a-zA-Z]*")) {
+            throw new IllegalArgumentException("The login must consist only of letters");
+        }
+        if (password.length() < 6) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
     }
-    */
 }

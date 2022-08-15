@@ -35,7 +35,7 @@ public class PersonService {
         return rep.save(person);
     }
 
-    public void delete(int id) {
-        rep.delete(rep.findById(id).get());
+    public void delete(Person person) {
+        rep.delete(person);
     }
 }
