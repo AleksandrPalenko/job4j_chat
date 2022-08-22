@@ -40,7 +40,7 @@ public class MessageController {
                                 HttpStatus.NOT_FOUND, "Message is not found. Please, check the input data."
                         )
                 );
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
     @PostMapping("/room/{rId}/person/{pId}/")
@@ -60,10 +60,8 @@ public class MessageController {
         );
         message.setPerson(person);
         room.setMessages(message.getRoom().getMessages());
-        return new ResponseEntity<>(
-                this.messageService.save(message),
-                HttpStatus.CREATED
-        );
+        return ResponseEntity.status(HttpStatus.OK).
+                body(messageService.save(message));
     }
 
 }
