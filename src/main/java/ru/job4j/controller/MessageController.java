@@ -11,7 +11,9 @@ import ru.job4j.service.MessageService;
 import ru.job4j.service.PersonService;
 import ru.job4j.service.RoomService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/message")
@@ -29,7 +31,7 @@ public class MessageController {
 
     @GetMapping("/")
     public List<Message> getAllMessagesFromPerson() {
-           return messageService.findAll();
+        return messageService.findAll();
     }
 
     @GetMapping("/{id}")
@@ -41,6 +43,26 @@ public class MessageController {
                         )
                 );
         return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<Message> patch(@RequestBody Message message) throws InvocationTargetException, IllegalAccessException {
+        Message current = messageService.findById(message.getId())
+                .orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, "Message is not found. Please, check the input data."
+                        )
+                );
+        if (message.getName() != null) {
+            current.setName(current.getName());
+        }
+        if (message.getRoom() != null) {
+            current.setRoom(current.getRoom());
+        }
+        if (message.getPerson() != null) {
+            current.setPerson(current.getPerson());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.save(current));
     }
 
     @PostMapping("/room/{rId}/person/{pId}/")

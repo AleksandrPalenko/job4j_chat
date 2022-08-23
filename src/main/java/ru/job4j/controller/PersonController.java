@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Person;
 import ru.job4j.model.Role;
+import ru.job4j.model.UserDTO;
 import ru.job4j.service.PersonService;
 import ru.job4j.service.RoleService;
 
@@ -69,6 +70,22 @@ public class PersonController {
                         ));
         personService.delete(personById);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<Person> patch(@RequestBody UserDTO userDTO) {
+        Person current = personService.findById(Integer.parseInt(userDTO.getLogin()))
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Account is not found. Please, check the input data."
+                        ));
+        if (userDTO.getLogin() != null) {
+            current.setLogin(userDTO.getLogin());
+        }
+        if (userDTO.getPassword() != null) {
+            current.setPassword(userDTO.getPassword());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(personService.save(current));
     }
 
     private void validationForRegistration(Person person) {

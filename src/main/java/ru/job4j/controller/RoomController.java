@@ -35,6 +35,20 @@ public class RoomController {
         return new ResponseEntity<>(room, HttpStatus.OK);
     }
 
+    @PatchMapping("/")
+    public ResponseEntity<Room> patch(@RequestBody Room room) {
+        Room current = roomService.findById(room.getId())
+                .orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, "Room is not found. Please, check the input data."
+                        )
+                );
+        if (room.getName() != null) {
+            current.setName(room.getName());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(roomService.save(current));
+    }
+
     @PostMapping("/addRoom")
     public ResponseEntity<Room> save(Room room) {
         if (room.getName() == null) {

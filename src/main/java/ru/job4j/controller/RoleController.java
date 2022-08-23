@@ -35,6 +35,20 @@ public class RoleController {
         );
     }
 
+    @PatchMapping("/")
+    public ResponseEntity<Role> patch(@RequestBody Role role) {
+        Role current = roleService.findById(role.getId())
+                .orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, "Role is not found. Please, check the input data."
+                        )
+                );
+        if (role.getName() != null) {
+            current.setName(role.getName());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(roleService.save(current));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Role> findById(@PathVariable int id) {
         Role role = roleService.findById(id)
