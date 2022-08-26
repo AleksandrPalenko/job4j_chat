@@ -3,6 +3,9 @@ package ru.job4j.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -16,7 +19,11 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @NotNull(message = "Id must be non null")
     private int id;
+    @NotEmpty(message = "text should not be empty ")
+    @Size(min = 1, max = 200, message
+            = "Message must be between 1 and 200 characters")
     @Column(name = "text")
     private String name;
     private Timestamp created = new Timestamp(System.currentTimeMillis());

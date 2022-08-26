@@ -7,6 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Room;
 import ru.job4j.service.RoomService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -36,7 +37,7 @@ public class RoomController {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Room> patch(@RequestBody Room room) {
+    public ResponseEntity<Room> patch(@Valid @RequestBody Room room) {
         Room current = roomService.findById(room.getId())
                 .orElseThrow(
                         () -> new ResponseStatusException(
@@ -50,7 +51,7 @@ public class RoomController {
     }
 
     @PostMapping("/addRoom")
-    public ResponseEntity<Room> save(Room room) {
+    public ResponseEntity<Room> save(@Valid @RequestBody Room room) {
         if (room.getName() == null) {
             throw new NullPointerException("Name of Room is not be empty");
         }

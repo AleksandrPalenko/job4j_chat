@@ -7,6 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Role;
 import ru.job4j.service.RoleService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,7 +26,7 @@ public class RoleController {
     }
 
     @PostMapping("/addRole")
-    public ResponseEntity<Role> save(Role role) {
+    public ResponseEntity<Role> save(@Valid @RequestBody Role role) {
         if (role.getName() == null) {
             throw new NullPointerException("Name of Role is not be empty");
         }
@@ -36,7 +37,7 @@ public class RoleController {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Role> patch(@RequestBody Role role) {
+    public ResponseEntity<Role> patch(@Valid @RequestBody Role role) {
         Role current = roleService.findById(role.getId())
                 .orElseThrow(
                         () -> new ResponseStatusException(

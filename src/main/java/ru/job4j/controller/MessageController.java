@@ -11,6 +11,7 @@ import ru.job4j.service.MessageService;
 import ru.job4j.service.PersonService;
 import ru.job4j.service.RoomService;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +47,7 @@ public class MessageController {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Message> patch(@RequestBody Message message) throws InvocationTargetException, IllegalAccessException {
+    public ResponseEntity<Message> patch(@Valid @RequestBody Message message) throws InvocationTargetException, IllegalAccessException {
         Message current = messageService.findById(message.getId())
                 .orElseThrow(
                         () -> new ResponseStatusException(
@@ -66,7 +67,7 @@ public class MessageController {
     }
 
     @PostMapping("/room/{rId}/person/{pId}/")
-    public ResponseEntity<Message> create(@RequestBody Message message, @PathVariable int rId, @PathVariable int pId) {
+    public ResponseEntity<Message> create(@Valid @RequestBody Message message, @PathVariable int rId, @PathVariable int pId) {
         if (message.getName() == null) {
             throw new NullPointerException("message must be writing");
         }
