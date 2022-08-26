@@ -11,6 +11,7 @@ import ru.job4j.model.UserDTO;
 import ru.job4j.service.PersonService;
 import ru.job4j.service.RoleService;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @RestController
@@ -56,7 +57,7 @@ public class PersonController {
     }
 
     @PutMapping("/person")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
+    public ResponseEntity<Void> update(@Valid @RequestBody Person person) {
         personService.save(person);
         return ResponseEntity.ok().build();
     }
@@ -73,7 +74,7 @@ public class PersonController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Person> patch(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Person> patch(@Valid @RequestBody UserDTO userDTO) {
         Person current = personService.findById(Integer.parseInt(userDTO.getLogin()))
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -88,7 +89,7 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.OK).body(personService.save(current));
     }
 
-    private void validationForRegistration(Person person) {
+    private void validationForRegistration(@Valid Person person) {
         String login = person.getLogin();
         String password = person.getPassword();
         if (login == null || password == null) {

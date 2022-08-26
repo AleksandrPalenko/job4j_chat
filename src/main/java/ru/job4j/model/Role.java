@@ -3,6 +3,9 @@ package ru.job4j.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Getter
@@ -15,7 +18,10 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @NotNull(message = "Id must be non null")
     private int id;
+    @NotBlank(message = "Name of Role must be between 1 and 15 characters")
+    @Size(min = 3, max = 15, message = "Name should be not empty")
     @Column(name = "name")
     private String name;
 
